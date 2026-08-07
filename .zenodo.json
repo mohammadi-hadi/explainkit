@@ -1,0 +1,19 @@
+{
+  "title": "explainkit: explain the classifier, then test the explanation",
+  "description": "Explain the classifier, then test the explanation: word-level attributions, token selection, prompt steering, replacement probes and faithfulness metrics for any text classifier.",
+  "creators": [
+    {
+      "name": "Mohammadi, Hadi",
+      "orcid": "0000-0003-0860-9200",
+      "affiliation": "Utrecht University"
+    }
+  ],
+  "license": "mit",
+  "upload_type": "software",
+  "keywords": [
+    "explainable-ai",
+    "interpretability",
+    "feature-attribution",
+    "nlp"
+  ]
+}
