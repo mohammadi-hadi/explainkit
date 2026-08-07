@@ -162,8 +162,8 @@ integrated-gradients backend; a `report` CLI over stored explanation JSONL.
 [SHAP](https://github.com/shap/shap), [LIME](https://github.com/marcotcr/lime)
 and the [ERASER](https://www.eraserbenchmark.com/) faithfulness metrics are
 the foundations this package operationalizes end-to-end.  Sister package:
-[judgekit](https://github.com/mohammadi-hadi/judgekit) — audit an LLM judge
-before you trust it.
+[judgekit](https://github.com/mohammadi-hadi/judgekit) — bias probes for LLM
+judges, each with a bootstrap confidence interval.
 
 ## Citing
 
