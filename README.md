@@ -1,10 +1,15 @@
-# explainkit
+<div align="center">
 
-Explain the classifier, then test the explanation.
+# explainkit
 
 [![ci](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml/badge.svg)](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21803833.svg)](https://doi.org/10.5281/zenodo.21803833)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+*Explain the classifier, then test the explanation.*
+
+</div>
 
 A token heatmap is a claim about a model, and most heatmaps are never tested.
 explainkit computes word-level attributions for any text classifier hiding
