@@ -188,7 +188,7 @@ This package operationalizes methods developed across:
 
 @inproceedings{mohammadi2025reliability,
   title     = {Assessing the Reliability of LLMs Annotations in the Context of Demographic Bias and Model Explanation},
-  author    = {Mohammadi, Hadi and Shahedi, Tina and Mosteiro, Pablo and Poesio, Massimo and Bagheri, Ayoub and Giachanou, Anastasia},
+  author    = {Mohammadi, Hadi and Shahedi, Tina and Mosteiro, Pablo and Poesio, Massimo and Bagheri, Robert A. and Giachanou, Anastasia},
   booktitle = {Proceedings of the 6th Workshop on Gender Bias in Natural Language Processing (GeBNLP)},
   year      = {2025},
   doi       = {10.18653/v1/2025.gebnlp-1.9}
