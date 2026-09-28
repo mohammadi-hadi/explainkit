@@ -176,7 +176,7 @@ This package operationalizes methods developed across:
 
 ```bibtex
 @article{mohammadi2024explainable,
-  title   = {A Transparent Pipeline for Online Sexism Detection Based on the Combination of Explainable Artificial Intelligence, Feature Selection, and Ensemble Learning},
+  title   = {A Transparent Pipeline for Identifying Sexism in Social Media: Combining Explainability with Model Prediction},
   author  = {Mohammadi, Hadi and Giachanou, Anastasia and Bagheri, Robert A.},
   journal = {Applied Sciences},
   volume  = {14},
@@ -207,7 +207,7 @@ This package operationalizes methods developed across:
   title         = {Explainability in Practice: A Survey of Explainable NLP Across Various Domains},
   author        = {Mohammadi, Hadi and Bagheri, Robert A. and Giachanou, Anastasia and Oberski, Daniel L.},
   year          = {2025},
-  journal       = {Journal of Information Science},
+  journal       = {arXiv preprint},
   eprint        = {2502.00837},
   archivePrefix = {arXiv}
 }
