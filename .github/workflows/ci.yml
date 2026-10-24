@@ -34,6 +34,18 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: pytest
 
+  # The base test job runs without shap, so its backend tests skip there.
+  # This job installs it and runs them, the seed check among them.
+  shap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,shap]"
+      - run: pytest tests/test_backends_optional.py
+
   # The committed demo report and the README table must be exactly what the
   # code regenerates.  Dependencies are pinned so a numeric change can only
   # come from this repository's own code.
