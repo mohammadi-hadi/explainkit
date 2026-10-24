@@ -34,10 +34,18 @@ Issues = "https://github.com/mohammadi-hadi/explainkit/issues"
 explainkit = "explainkit.cli:main"
 
 [project.optional-dependencies]
-shap = ["shap>=0.53"]
+# shap 0.53 is the first that honours the seed for text, and it needs Python
+# 3.12; on 3.11 the newest shap is 0.51, and explainkit warns about the seed.
+shap = ["shap>=0.53; python_version >= '3.12'", "shap>=0.45; python_version < '3.12'"]
 lime = ["lime>=0.2.0.1"]
 transformers = ["transformers>=4.40", "torch>=2.2"]
-all = ["shap>=0.53", "lime>=0.2.0.1", "transformers>=4.40", "torch>=2.2"]
+all = [
+    "shap>=0.53; python_version >= '3.12'",
+    "shap>=0.45; python_version < '3.12'",
+    "lime>=0.2.0.1",
+    "transformers>=4.40",
+    "torch>=2.2",
+]
 dev = [
     "pytest>=8",
     "ruff>=0.4",
