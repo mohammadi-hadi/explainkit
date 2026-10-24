@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2026-10-24)
 
 The first release on PyPI. Most of these fixes came out of running the shap
 backend on a model explainkit did not build: DistilBERT fine-tuned on SST-2.

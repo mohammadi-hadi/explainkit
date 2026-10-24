@@ -3,6 +3,7 @@
 # explainkit
 
 [![ci](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml/badge.svg)](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/explainkit)](https://pypi.org/project/explainkit/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21803833.svg)](https://doi.org/10.5281/zenodo.21803833)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/mohammadi-hadi/explainkit/blob/main/LICENSE)
@@ -56,7 +57,7 @@ committed number differs from what the code produces.
 ## Install
 
 ```
-pip install git+https://github.com/mohammadi-hadi/explainkit
+pip install explainkit
 ```
 
 Python 3.11+.  Runtime dependencies: numpy, pydantic, matplotlib.  The core

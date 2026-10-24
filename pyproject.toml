@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "explainkit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Explain the classifier, then test the explanation: word-level attributions, token selection, prompt steering, replacement probes and faithfulness metrics for any text classifier."
 readme = "README.md"
 license = "MIT"
