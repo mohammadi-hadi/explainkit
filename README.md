@@ -151,10 +151,10 @@ e = explainer.explain("a quietly devastating film", method="shap")
 - The demo corpus is synthetic by design (real moderation data cannot ship
   with ground-truth rationales), so treat its numbers as a validation harness,
   not a benchmark.
-- v0.1 is word-level only.  The shap backend masks with a placeholder word
-  instead of deleting (its Text masker requires one); the lime backend
-  perturbs a whitespace-joined rendering of the tokens.  Both are rank-safe;
-  neither is byte-identical to occlusion's deletions.
+- Word-level only.  Occlusion, the surrogate and the shap backend all build
+  their variants by splicing the same word spans, so they see the same texts.
+  The lime backend perturbs a whitespace-joined rendering of the tokens, so
+  its variants are not byte-identical to the others.
 
 ## Roadmap
 
