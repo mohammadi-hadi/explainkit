@@ -6,6 +6,9 @@ selection, prompt steering, replacement probes, and faithfulness,
 plausibility and agreement metrics.
 """
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _version
+
 from explainkit.agreement import rank_correlation, topk_jaccard
 from explainkit.explain import Explainer, drop_spans
 from explainkit.faithfulness import (
@@ -32,7 +35,11 @@ from explainkit.select import TokenImportance, select_tokens, token_importance
 from explainkit.steer import highlight, label_distribution, majority_vote
 from explainkit.tokenizers import WORD_PATTERN, regex_tokenizer, word_tokenizer
 
-__version__ = "0.1.0"
+try:
+    # One source for the number: the version pyproject.toml gave the install.
+    __version__ = _version("explainkit")
+except PackageNotFoundError:  # imported from a source tree that isn't installed
+    __version__ = "0+unknown"
 
 __all__ = [
     "WORD_PATTERN",
