@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from collections.abc import Sequence
 
 import numpy as np
@@ -89,6 +90,19 @@ def test_shap_changes_only_the_dropped_words(mask: str) -> None:
     assert explanation.base_value + sum(explanation.scores) == pytest.approx(
         explanation.prediction
     )
+
+
+def test_old_shap_warning_points_at_the_caller(monkeypatch: pytest.MonkeyPatch) -> None:
+    shap = pytest.importorskip("shap")
+    monkeypatch.setattr(shap, "__version__", "0.52.0")
+    explainer = Explainer(CountingLinearModel())
+    with pytest.warns(UserWarning, match="ignores the seed") as caught:
+        explainer.explain("a good day", method="shap", n_samples=16)
+    assert caught[0].filename == __file__
+    if sys.version_info >= (3, 12):
+        with pytest.warns(UserWarning, match="ignores the seed") as caught:
+            explainer.explain_batch(["a good day"], method="shap", n_samples=16)
+        assert caught[0].filename == __file__
 
 
 def test_shap_explains_a_one_word_text() -> None:

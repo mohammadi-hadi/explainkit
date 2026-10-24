@@ -15,8 +15,10 @@ partition tree.  Requires the ``shap`` extra.
 from __future__ import annotations
 
 import re
+import sys
 import warnings
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -62,7 +64,11 @@ def _warn_old_shap(version: str) -> None:
     # Before 0.53 the partition-tree shuffle drew from numba's generator,
     # which np.random.seed never reaches.
     message = f"shap {version} ignores the seed for text; upgrade to shap>=0.53"
-    warnings.warn(message, stacklevel=4)
+    if sys.version_info >= (3, 12):
+        package = str(Path(__file__).resolve().parent)
+        warnings.warn(message, stacklevel=2, skip_file_prefixes=(package,))
+    else:
+        warnings.warn(message, stacklevel=4)
 
 
 def shap_scores(
