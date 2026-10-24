@@ -5,7 +5,7 @@
 [![ci](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml/badge.svg)](https://github.com/mohammadi-hadi/explainkit/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21803833.svg)](https://doi.org/10.5281/zenodo.21803833)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/mohammadi-hadi/explainkit/blob/main/LICENSE)
 
 *Explain the classifier, then test the explanation.*
 
@@ -45,13 +45,13 @@ scores describe the *same* classifier, but acting on the informed ones flips
 essentially every verdict while acting on random ones barely moves it.  An
 attribution you cannot act on was never evidence.
 
-`make demo` regenerates the [full report](results/report.md) and the figures
+`make demo` regenerates the [full report](https://github.com/mohammadi-hadi/explainkit/blob/main/results/report.md) and the figures
 from fixed seeds.  CI rebuilds them from pinned dependencies and fails if a
 committed number differs from what the code produces.
 
-![attribution](results/figures/attribution.png)
+![attribution](https://raw.githubusercontent.com/mohammadi-hadi/explainkit/main/results/figures/attribution.png)
 
-![deletion curve](results/figures/deletion_curve.png)
+![deletion curve](https://raw.githubusercontent.com/mohammadi-hadi/explainkit/main/results/figures/deletion_curve.png)
 
 ## Install
 
