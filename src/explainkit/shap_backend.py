@@ -56,6 +56,13 @@ def shap_scores(
         return np.asarray(predict_fn(list(batch)), dtype=np.float64)[:, target]
 
     mask_word = mask if len(tokenizer(mask)) == 1 else MASK_WORD
+    if len(spans) == 1:
+        # One word has one exact Shapley value, the full change from the
+        # all-masked text.  shap's Text masker can't build its partition tree
+        # over a single token and raises a zero-size array error instead.
+        start, end = spans[0].start, spans[0].end
+        both = f([text, text[:start] + mask_word + text[end:]])
+        return [float(both[0] - both[1])], float(both[1])
     masker = shap.maskers.Text(
         _masker_tokenizer(tokenizer), mask_token=mask_word, collapse_mask_token=False
     )

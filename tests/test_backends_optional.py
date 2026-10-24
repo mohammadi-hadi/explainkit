@@ -46,6 +46,16 @@ def test_shap_smoke_if_installed() -> None:
     assert by_token["awful"] < 0
 
 
+def test_shap_explains_a_one_word_text() -> None:
+    pytest.importorskip("shap")
+    model = CountingLinearModel()
+    explanation = Explainer(model, mask="<x>").explain("good", method="shap", target=1)
+    full, masked = model(["good", "<x>"])[:, 1]
+    assert explanation.tokens == ["good"]
+    assert explanation.scores == pytest.approx([full - masked])
+    assert explanation.base_value == pytest.approx(masked)
+
+
 def test_lime_smoke_if_installed() -> None:
     pytest.importorskip("lime")
     explanation = Explainer(CountingLinearModel()).explain(
