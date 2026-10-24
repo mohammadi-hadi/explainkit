@@ -46,6 +46,17 @@ def test_shap_smoke_if_installed() -> None:
     assert by_token["awful"] < 0
 
 
+def test_shap_repeats_itself_with_the_same_seed() -> None:
+    pytest.importorskip("shap")
+    explainer = Explainer(CountingLinearModel())
+    text = "a good day, an awful meeting, plain notes"
+    runs = [
+        explainer.explain(text, method="shap", n_samples=64, seed=0, target=1).scores
+        for _ in range(5)
+    ]
+    assert all(run == runs[0] for run in runs)
+
+
 def test_shap_explains_a_one_word_text() -> None:
     pytest.importorskip("shap")
     model = CountingLinearModel()

@@ -13,6 +13,8 @@ comparisons are rank-based, where this does not matter.  Requires the
 
 from __future__ import annotations
 
+import re
+import warnings
 from collections.abc import Sequence
 from typing import Any
 
@@ -51,6 +53,14 @@ def shap_scores(
     placeholder ``MASK`` stands in (the Text masker cannot delete outright).
     """
     shap = require("shap", extra="shap")
+    if tuple(int(n) for n in re.findall(r"\d+", shap.__version__)[:2]) < (0, 53):
+        # Before 0.53 the partition-tree shuffle drew from numba's generator,
+        # which np.random.seed never reaches.
+        warnings.warn(
+            f"shap {shap.__version__} ignores the seed for text; "
+            "upgrade to shap>=0.53 for repeatable scores",
+            stacklevel=3,
+        )
 
     def f(batch: Sequence[str]) -> Any:
         return np.asarray(predict_fn(list(batch)), dtype=np.float64)[:, target]
