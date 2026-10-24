@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 from collections.abc import Sequence
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -113,6 +114,34 @@ def test_shap_explains_a_one_word_text() -> None:
     assert explanation.tokens == ["good"]
     assert explanation.scores == pytest.approx([full - masked])
     assert explanation.base_value == pytest.approx(masked)
+
+
+class FakePipeline:
+    """Just enough of a transformers pipeline: config, tokenizer, a call."""
+
+    def __init__(self) -> None:
+        self.model = SimpleNamespace(config=SimpleNamespace(label2id={"NEG": 0, "POS": 1}))
+        self.tokenizer = SimpleNamespace(mask_token="[MASK]")
+        self.seen: list[str] = []
+        self.linear = CountingLinearModel()
+
+    def __call__(self, texts: list[str], **kwargs: object) -> list[list[dict[str, object]]]:
+        self.seen += texts
+        probs = self.linear(texts)
+        return [[{"label": "NEG", "score": p[0]}, {"label": "POS", "score": p[1]}] for p in probs]
+
+
+def test_hf_wrapper_exposes_the_tokenizer_mask_token() -> None:
+    from explainkit.hf import from_pipeline
+
+    pipe = FakePipeline()
+    predict = from_pipeline(pipe)
+    assert predict.mask_token == "[MASK]"
+    probs = predict(["a good day", "an awful day"])
+    assert probs.shape == (2, 2)
+    assert probs[0, 1] > 0.5 > probs[1, 1]
+    Explainer(predict, mask=predict.mask_token).explain("a good day")
+    assert "a [MASK] day" in pipe.seen
 
 
 def test_lime_smoke_if_installed() -> None:
