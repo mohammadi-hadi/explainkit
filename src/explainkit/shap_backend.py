@@ -4,11 +4,12 @@ The one design rule here: shap never tokenizes.  Its Text masker is handed a
 tokenizer built from the caller's word spans, so the returned values align
 one-to-one with the same tokens every other method scores.
 
-One mechanical difference from occlusion: the Text masker replaces dropped
-words with a placeholder word (``MASK``) rather than deleting them, because
-it requires a mask token that survives tokenization.  Cross-method
-comparisons are rank-based, where this does not matter.  Requires the
-``shap`` extra.
+Masked texts are built the way occlusion builds them: each dropped word's
+span is replaced with the explainer's ``mask``, which deletes it by default,
+and nothing else in the string changes.  shap's stock Text masker writes a
+placeholder that sticks to the next word ("a good day" with "good" dropped
+reaches the model as "a MASKday"), so here it only supplies the shape and the
+partition tree.  Requires the ``shap`` extra.
 """
 
 from __future__ import annotations
@@ -21,9 +22,12 @@ from typing import Any
 import numpy as np
 
 from explainkit._optional import require
+from explainkit.explain import drop_spans
 from explainkit.schema import PredictFn, Span, Tokenizer
 
-MASK_WORD = "MASK"
+# shap's Text masker needs a token to look up when it is built, though the
+# splicing masker below never writes it.
+_INIT_TOKEN = "MASK"
 
 
 def _masker_tokenizer(tokenizer: Tokenizer) -> Any:
@@ -35,6 +39,30 @@ def _masker_tokenizer(tokenizer: Tokenizer) -> Any:
         }
 
     return tokenize
+
+
+def _splicing_masker(shap: Any, tokenizer: Tokenizer, mask: str) -> Any:
+    """shap's Text masker, with masked texts spliced from the word spans."""
+
+    class SplicingText(shap.maskers.Text):  # type: ignore[misc]
+        def __call__(self, keep: Any, s: str) -> tuple[Any, ...]:
+            keep = np.asarray(self._standardize_mask(keep, s), dtype=bool)
+            spans = [(span.start, span.end) for span in tokenizer(s)]
+            dropped = [int(i) for i in np.flatnonzero(~keep)]
+            return (np.array([drop_spans(s, spans, dropped, mask)]),)
+
+    return SplicingText(
+        _masker_tokenizer(tokenizer), mask_token=_INIT_TOKEN, collapse_mask_token=False
+    )
+
+
+def _warn_old_shap(version: str) -> None:
+    if tuple(int(n) for n in re.findall(r"\d+", version)[:2]) >= (0, 53):
+        return
+    # Before 0.53 the partition-tree shuffle drew from numba's generator,
+    # which np.random.seed never reaches.
+    message = f"shap {version} ignores the seed for text; upgrade to shap>=0.53"
+    warnings.warn(message, stacklevel=4)
 
 
 def shap_scores(
@@ -49,33 +77,22 @@ def shap_scores(
 ) -> tuple[list[float], float]:
     """SHAP values for one text, aligned to ``spans``; returns (scores, base).
 
-    ``mask`` is used when it tokenizes to exactly one word; otherwise the
-    placeholder ``MASK`` stands in (the Text masker cannot delete outright).
+    A dropped word is replaced with ``mask``; the empty string deletes it.
     """
     shap = require("shap", extra="shap")
-    if tuple(int(n) for n in re.findall(r"\d+", shap.__version__)[:2]) < (0, 53):
-        # Before 0.53 the partition-tree shuffle drew from numba's generator,
-        # which np.random.seed never reaches.
-        warnings.warn(
-            f"shap {shap.__version__} ignores the seed for text; "
-            "upgrade to shap>=0.53 for repeatable scores",
-            stacklevel=3,
-        )
+    _warn_old_shap(shap.__version__)
 
     def f(batch: Sequence[str]) -> Any:
         return np.asarray(predict_fn(list(batch)), dtype=np.float64)[:, target]
 
-    mask_word = mask if len(tokenizer(mask)) == 1 else MASK_WORD
+    offsets = [(span.start, span.end) for span in spans]
     if len(spans) == 1:
         # One word has one exact Shapley value, the full change from the
-        # all-masked text.  shap's Text masker can't build its partition tree
-        # over a single token and raises a zero-size array error instead.
-        start, end = spans[0].start, spans[0].end
-        both = f([text, text[:start] + mask_word + text[end:]])
+        # masked text.  shap can't build its partition tree over a single
+        # token and raises a zero-size array error instead.
+        both = f([text, drop_spans(text, offsets, [0], mask)])
         return [float(both[0] - both[1])], float(both[1])
-    masker = shap.maskers.Text(
-        _masker_tokenizer(tokenizer), mask_token=mask_word, collapse_mask_token=False
-    )
+    masker = _splicing_masker(shap, tokenizer, mask)
     explainer = shap.Explainer(f, masker, algorithm="permutation", seed=seed)
     # The permutation explainer needs at least one full forward-and-back pass
     # over the tokens.

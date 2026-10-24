@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import importlib.util
+from collections.abc import Sequence
 
+import numpy as np
 import pytest
+from numpy.typing import NDArray
 
-from explainkit import Explainer
+from explainkit import Explainer, drop_spans
 from test_occlusion import CountingLinearModel
 
 
@@ -55,6 +58,37 @@ def test_shap_repeats_itself_with_the_same_seed() -> None:
         for _ in range(5)
     ]
     assert all(run == runs[0] for run in runs)
+
+
+class RecordingLinearModel(CountingLinearModel):
+    def __init__(self) -> None:
+        super().__init__()
+        self.seen: list[str] = []
+
+    def __call__(self, texts: Sequence[str]) -> NDArray[np.float64]:
+        self.seen += list(texts)
+        return super().__call__(texts)
+
+
+@pytest.mark.parametrize("mask", ["", "<x>", "two words"])
+def test_shap_changes_only_the_dropped_words(mask: str) -> None:
+    pytest.importorskip("shap")
+    model = RecordingLinearModel()
+    text = "\"A good day\", an awful meeting!"
+    explanation = Explainer(model, mask=mask).explain(text, method="shap", n_samples=64, target=1)
+    spans = explanation.spans
+    allowed = {
+        drop_spans(text, spans, [i for i in range(len(spans)) if not keep >> i & 1], mask)
+        for keep in range(2 ** len(spans))
+    }
+    assert set(model.seen) <= allowed
+    assert text in model.seen
+    by_token = dict(zip(explanation.tokens, explanation.scores, strict=True))
+    for token in ("A", "day", "an", "meeting"):
+        assert by_token[token] == pytest.approx(0.0, abs=1e-12)
+    assert explanation.base_value + sum(explanation.scores) == pytest.approx(
+        explanation.prediction
+    )
 
 
 def test_shap_explains_a_one_word_text() -> None:
